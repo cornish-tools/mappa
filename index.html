@@ -21,12 +21,12 @@
     const protocol = new pmtiles.Protocol();
     maplibregl.addProtocol('pmtiles', protocol.tile);
 
-    const PMTILES_URL = 'https://data.source.coop/protomaps/openstreetmap/tiles/v3.pmtiles';
+    // const PMTILES_URL = 'https://data.source.coop/protomaps/openstreetmap/tiles/v3.pmtiles';
 
-    const p = new pmtiles.PMTiles(PMTILES_URL);
+    // const p = new pmtiles.PMTiles(PMTILES_URL);
 
-    // this is so we share one instance across the JS code and the map renderer
-    protocol.add(p);
+    // // this is so we share one instance across the JS code and the map renderer
+    // protocol.add(p);
 
     const map = new maplibregl.Map({
         container: 'map', // container id
