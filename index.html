@@ -1,33 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>An Norvys</title>
-    <meta property="og:description" content="Uses the PMTiles plugin and protocol to present a map." />
+    <meta property="og:description" content="Cornish-language map of the World using PMTiles and OpenStreetMap data" />
+    <meta name="description" content="Cornish-language map of the World using PMTiles and OpenStreetMap data" />
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='stylesheet' href='https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css' />
     <script src='https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js'></script>
     <script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"></script>
     <style>
-        body { margin: 0; padding: 0; }
-        html, body, #map { height: 100%; }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body,
+        #map {
+            height: 100%;
+        }
     </style>
 </head>
+
 <body>
-<div id="map"></div>
-<script>
+    <div id="map"></div>
+    <div>
+    <a id="downloadLink" href="" download="map.png">Download ↓</a>
+    </div>
+    <script>
 
-    // add the PMTiles plugin to the maplibregl global.
-    const protocol = new pmtiles.Protocol();
-    maplibregl.addProtocol('pmtiles', protocol.tile);
+        // add the PMTiles plugin to the maplibregl global.
+        const protocol = new pmtiles.Protocol();
+        maplibregl.addProtocol('pmtiles', protocol.tile);
 
-    const map = new maplibregl.Map({
-        container: 'map', // container id
-        style: 'style.json', // style URL
-        center: [-5, 50.5], // starting position [lng, lat]
-        zoom: 5, // starting zoom
-        maplibreLogo: true
-    });
-</script>
+        // get url data
+        var hash = window.location.hash.substr(1); // removes the '#' symbol
+        var result = hash.split('&').reduce(function (res, item) {
+            var parts = item.split('=');
+            res[parts[0]] = parts[1];
+            return res;
+        }, {});
+
+        var xyz = "-5/50.5/5".split("/");
+        if (result.map !== undefined) {
+            xyz = result.map.split("/");
+        }
+
+        const map = new maplibregl.Map({
+            container: 'map', // container id
+            style: 'style.json', // style URL
+            center: [xyz[0], xyz[1]], // starting position [lng, lat]
+            zoom: xyz[2], // starting zoom
+            maplibreLogo: true,
+            preserveDrawingBuffer: true
+        });
+
+        map.on('moveend', (e) => {
+            var ll = map.getCenter().wrap();
+            window.location.hash = "#map=" + ll["lng"].toFixed(4) + "/" + ll["lat"].toFixed(4) + "/" + map.getZoom().toFixed(1);
+        });
+        
+
+        $('#downloadLink').click(function() {
+            var img = map.getCanvas().toDataURL('image/png')
+            this.href = img
+        })
+
+    </script>
 </body>
+
 </html>
